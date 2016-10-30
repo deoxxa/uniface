@@ -3,6 +3,11 @@ body {
   margin: .5em;
 }
 
+button {
+  font-family: monospace;
+  padding: .3em .5em;
+}
+
 .element {
   margin: 1em .5em;
   background: rgba(255, 255, 255, 0.5);
@@ -35,6 +40,7 @@ body {
 
 .buttons { float: right; }
 .button { margin-left: .5em; }
+.button-bold { font-weight: bold; }
 
 .text-input input {
   width: 100%;
@@ -58,4 +64,25 @@ body {
 .element label {
   font-weight: bold;
   margin-right: .25em;
+}
+
+.selected {
+  font-weight: bold;
+}
+
+.progress-outer {
+  position: relative;
+  text-align: center;
+}
+
+.progress-inner {
+  position: absolute;
+  height: 100%;
+  left: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.progress-label {
+  display: inline-block;
+  padding: .2em;
 }

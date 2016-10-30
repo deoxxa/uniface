@@ -31,53 +31,81 @@ app.on('activate', () => {
   }
 });
 
-const backlog = [];
-function record(action, args) {
-  const id = v4();
+const backlog = new Array();
+const clients = new Set();
 
-  backlog.push({ id, action, args });
+function getByID(id) {
+  for (let i = 0; i < backlog.length; i++) {
+    if (backlog[i].id === id) {
+      return backlog[i];
+    }
+  }
+
+  return null;
+}
+
+function record(inputId, action, args) {
+  const id = inputId || v4();
+
+  let entry = getByID(id);
+  if (entry) {
+    entry.args = args;
+  } else {
+    entry = { action, id, value: null, args };
+    backlog.push(entry);
+  }
 
   return id;
 }
 
-const clients = new Set();
+function update(id, value) {
+  const entry = getByID(id);
+  if (entry) {
+    entry.value = value;
+
+    for (c of clients) {
+      c.send('_value', id, value);
+    }
+  }
+}
+
 ipcMain.on('ready', (event) => {
   clients.add(event.sender);
 
-  backlog.slice(0, 100).forEach(({ action, id, args }) => {
-    event.sender.send(action, id, true, args);
+  backlog.slice(0, 100).forEach(({ action, id, value, args }) => {
+    event.sender.send(action, id, value, args);
   });
 });
 
 const server = jayson.server({
   Debug: ([ { text } ], cb) => {
-    const id = record('debug', { text });
+    const id = record(null, 'debug', { text });
     for (c of clients) {
-      c.send('debug', id, false, { text });
+      c.send('debug', id, null, { text });
     }
 
     cb(null, true);
   },
   Info: ([ { text } ], cb) => {
-    const id = record('info', { text });
+    const id = record(null, 'info', { text });
     for (c of clients) {
-      c.send('info', id, false, { text });
+      c.send('info', id, null, { text });
     }
 
     cb(null, true);
   },
   Warn: ([ { text } ], cb) => {
-    const id = record('warn', { text });
+    const id = record(null, 'warn', { text });
     for (c of clients) {
-      c.send('warn', id, false, { text });
+      c.send('warn', id, null, { text });
     }
 
     cb(null, true);
   },
   Error: ([ { text } ], cb) => {
-    const id = record('error', { text });
+    const id = record(null, 'error', { text });
     for (c of clients) {
-      c.send('error', id, false, { text });
+      c.send('error', id, null, { text });
     }
 
     cb(null, true);
@@ -85,52 +113,67 @@ const server = jayson.server({
   Progress: ([ { token: inputToken, total, complete, final } ], cb) => {
     const token = inputToken || v4();
 
-    const id = record('progress', { token, total, complete, final });
+    const id = record(token, 'progress', { token, total, complete, final });
     for (c of clients) {
-      c.send('progress', id, false, { token, total, complete, final });
+      c.send('progress', id, null, { token, total, complete, final });
     }
 
     cb(null, token);
   },
   Confirm: ([ { text } ], cb) => {
-    const id = record('confirm', { text });
+    const id = record(null, 'confirm', { text });
     for (c of clients) {
-      c.send('confirm', id, false, { text });
+      c.send('confirm', id, null, { text });
     }
 
-    ipcMain.once(id, (event, res) => { cb(null, res); });
+    ipcMain.once(id, (event, res) => {
+      update(id, res);
+      cb(null, res);
+    });
   },
   Prompt: ([ { text } ], cb) => {
-    const id = record('prompt', { text });
+    const id = record(null, 'prompt', { text });
     for (c of clients) {
-      c.send('prompt', id, false, { text });
+      c.send('prompt', id, null, { text });
     }
 
-    ipcMain.once(id, (event, res) => { cb(null, res); });
+    ipcMain.once(id, (event, res) => {
+      update(id, res);
+      cb(null, res);
+    });
   },
   Password: ([ { text } ], cb) => {
-    const id = record('password', { text });
+    const id = record(null, 'password', { text });
     for (c of clients) {
-      c.send('password', id, false, { text });
+      c.send('password', id, null, { text });
     }
 
-    ipcMain.once(id, (event, res) => { cb(null, res); });
+    ipcMain.once(id, (event, res) => {
+      update(id, res);
+      cb(null, res);
+    });
   },
   Option: ([ { text, options } ], cb) => {
-    const id = record('option', { text, options });
+    const id = record(null, 'option', { text, options });
     for (c of clients) {
-      c.send('option', id, false, { text, options });
+      c.send('option', id, null, { text, options });
     }
 
-    ipcMain.once(id, (event, res) => { cb(null, res); });
+    ipcMain.once(id, (event, res) => {
+      update(id, res);
+      cb(null, res);
+    });
   },
   Options: ([ { text, options } ], cb) => {
-    const id = record('options', { text, options });
+    const id = record(null, 'options', { text, options });
     for (c of clients) {
-      c.send('options', id, false, { text, options });
+      c.send('options', id, null, { text, options });
     }
 
-    ipcMain.once(id, (event, res) => { cb(null, res); });
+    ipcMain.once(id, (event, res) => {
+      update(id, res);
+      cb(null, res);
+    });
   },
 });
 
