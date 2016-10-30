@@ -1,0 +1,61 @@
+body {
+  font-family: monospace;
+  margin: .5em;
+}
+
+.element {
+  margin: 1em .5em;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.text {
+  padding: .5em;
+  margin: 1em -.5em;
+  box-sizing: border-box;
+  border-width: 2px 0;
+  border-style: solid;
+}
+
+.debug {
+  border-color: rgb(79, 169, 203);
+  background-color: rgba(79, 169, 203, 0.2);
+}
+.info {
+  border-color: rgb(200, 200, 200);
+  background-color: rgba(200, 200, 200, 0.2);
+}
+.warn {
+  border-color: rgb(250, 200, 72);
+  background-color: rgba(250, 200, 72, 0.2);
+}
+.error {
+  border-color: rgb(246, 144, 88);
+  background-color: rgba(246, 144, 88, 0.2);
+}
+
+.buttons { float: right; }
+.button { margin-left: .5em; }
+
+.text-input input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: .5em;
+}
+
+.option {
+  margin-right: .3em;
+  padding: .2em;
+}
+
+.checkboxes {
+  margin: .5em 0;
+}
+
+.checkbox {
+  margin-right: .25em;
+}
+
+.element label {
+  font-weight: bold;
+  margin-right: .25em;
+}

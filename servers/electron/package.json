@@ -1,0 +1,14 @@
+{
+  "name": "uniface-electron",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+  	"start": "electron index.js"
+  },
+  "dependencies": {
+    "crel": "^3.0.0",
+    "electron": "^1.4.4",
+    "jayson": "^2.0.2",
+    "uuid": "^2.0.3"
+  }
+}
