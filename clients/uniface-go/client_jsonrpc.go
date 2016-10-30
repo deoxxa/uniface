@@ -153,7 +153,7 @@ func (c jsonRPCClient) Options(text string, options []string) ([]string, error) 
 func (c jsonRPCClient) Progress(token *string, total, complete float64, final bool) (string, error) {
 	var res string
 	if err := c.c.Call("Progress", struct {
-		Token    *string `json:"string"`
+		Token    *string `json:"token"`
 		Total    float64 `json:"total"`
 		Complete float64 `json:"complete"`
 		Final    bool    `json:"final"`
@@ -162,6 +162,14 @@ func (c jsonRPCClient) Progress(token *string, total, complete float64, final bo
 	}
 
 	return res, nil
+}
+
+func (c jsonRPCClient) MustProgress(token *string, total, complete float64, final bool) string {
+	if r, err := c.Progress(token, total, complete, final); err != nil {
+		panic(err)
+	} else {
+		return r
+	}
 }
 
 func DialJSONRPC(net, addr string) (Client, error) {

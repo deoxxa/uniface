@@ -1,24 +1,31 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
+	"time"
 
 	"fknsrs.biz/p/uniface/clients/uniface-go"
 )
 
 func main() {
-	c, err := uniface.DialJSONRPC("unix", "/tmp/.unifaced.sock")
-	if err != nil {
-		panic(err)
-	}
+	c := uniface.NewClient()
 
-	c.Info(fmt.Sprintf("cool: %v", c.MustConfirm("is this cool?")))
-	c.Info(fmt.Sprintf("you said: %q", c.MustPrompt("what do you say?")))
-	c.Info(fmt.Sprintf("ha ha your password is %q", c.MustPassword("what is your password?")))
-	c.Info(fmt.Sprintf("apparently %s is the best", c.MustOption("what is the best?", []string{"pizza", "burger"})))
-	c.Info(fmt.Sprintf("okay, these are good: %v", c.MustOptions("what is good?", []string{"milkshake", "cola", "coffee"})))
+	// c.Info(fmt.Sprintf("cool: %v", c.MustConfirm("is this cool?")))
+	// c.Info(fmt.Sprintf("you said: %q", c.MustPrompt("what do you say?")))
+	// c.Info(fmt.Sprintf("ha ha your password is %q", c.MustPassword("what is your password?")))
+	// c.Info(fmt.Sprintf("apparently %s is the best", c.MustOption("what is the best?", []string{"pizza", "burger"})))
+	// c.Info(fmt.Sprintf("okay, these are good: %v", c.MustOptions("what is good?", []string{"milkshake", "cola", "coffee"})))
 
-	for {
+	go func() {
+		progressToken := c.MustProgress(nil, 25, 0, false)
+
+		for i := 0; true; i++ {
+			time.Sleep(time.Millisecond * 100)
+			progressToken = c.MustProgress(&progressToken, 25, float64(i%25), false)
+		}
+	}()
+
+	for i := 0; i < 10; i++ {
 		text := c.MustPrompt("what do you want to say?")
 		switch c.MustOption("how do you want to say it?", []string{"debug", "info", "warn", "error"}) {
 		case "debug":

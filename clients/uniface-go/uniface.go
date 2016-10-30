@@ -7,6 +7,7 @@ type Client interface {
 	Error(text string) error
 
 	Progress(token *string, total, complete float64, final bool) (string, error)
+	MustProgress(token *string, total, complete float64, final bool) string
 
 	Confirm(text string) (bool, error)
 	Prompt(text string) (string, error)
